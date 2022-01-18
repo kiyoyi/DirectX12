@@ -1,7 +1,5 @@
-# 1 Setting up DIrectX12
+# 1 Creating a window
 
 url: 
 
-https://www.braynzarsoft.net/viewtutorial/q16390-setting-up-directx-12-for-visual-studio-2015
-
-https://blog.csdn.net/weixin_44350205/article/details/115450316
+https://www.braynzarsoft.net/viewtutorial/q16390-02-creating-a-window
