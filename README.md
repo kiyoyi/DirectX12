@@ -1,5 +1,5 @@
-# 1 Creating a window
+# 2 Initializing DirectX 12
 
 url: 
 
-https://www.braynzarsoft.net/viewtutorial/q16390-02-creating-a-window
+https://www.braynzarsoft.net/viewtutorial/q16390-03-initializing-directx-12
