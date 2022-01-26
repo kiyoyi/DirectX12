@@ -1,9 +1,10 @@
+#include <DirectXMath.h>
 #include <Windows.h>
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <d3dcompiler.h>
-#include <DirectXMath.h>
 #include <stdio.h>
+#include <initguid.h>
 #include "d3dx12.h"
 
 // this will only call release if an object exists (prevents exceptions calling release on non existant objects)
@@ -19,7 +20,7 @@ bool FullScreen = false;
 // we will exit the program when this becomes false
 bool Running = true;
 
-// direct3d stuff
+// direct3d stuff initiation
 const int frameBufferCount = 3;
 ID3D12Device* device;
 IDXGISwapChain3* swapChain; // swapchain used to switch between render targets
@@ -33,6 +34,14 @@ HANDLE fenceEvent; // a handle to an event when our fence is unlocked by the gpu
 UINT64 fenceValue[frameBufferCount]; // thsis value is incremented each frame. each fence will have its own value
 int frameIndex; // current rtv we are on
 int rtvDescriptorSize;
+
+// drawing stage 1
+ID3D12PipelineState* pipelineStateObject;
+ID3D12RootSignature* rootSignature;
+D3D12_VIEWPORT viewport;
+D3D12_RECT scissorRect;
+ID3D12Resource* vertexBuffer; // default buffer
+D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 
 // create a window
 bool InitializeWindow(HINSTANCE hInstance, int ShowWnd, int width, int height, bool fullscreen);
