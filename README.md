@@ -1,9 +1,8 @@
-# 4 Adding color
+# 5 Draw quad 
 
-add color attributes in vertex buffer. 
+add index buffer. same operation as vertex buffer : create default heap, upload heap, uploadsubresource, store the GPU virtual address in index buffer view. then in updatePipeline function, add new function (set index buffer) in commandList, and change draw call function to DrawIndexedInstanced() 
 
-change Vertex definition, input layout, vertex shader and pixel shader.
 
 url: 
 
-https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-adding-color
+https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-index-buffers

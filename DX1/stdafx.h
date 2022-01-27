@@ -35,13 +35,15 @@ UINT64 fenceValue[frameBufferCount]; // thsis value is incremented each frame. e
 int frameIndex; // current rtv we are on
 int rtvDescriptorSize;
 
-// drawing stage 1
+// drawing
 ID3D12PipelineState* pipelineStateObject;
 ID3D12RootSignature* rootSignature;
 D3D12_VIEWPORT viewport;
 D3D12_RECT scissorRect;
 ID3D12Resource* vertexBuffer; // default buffer
+ID3D12Resource* indexBuffer;
 D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+D3D12_INDEX_BUFFER_VIEW indexBufferView;
 
 // create a window
 bool InitializeWindow(HINSTANCE hInstance, int ShowWnd, int width, int height, bool fullscreen);
