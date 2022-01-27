@@ -1,8 +1,10 @@
-# 5 Draw quad 
+# 6 Depth Testing
 
-add index buffer. same operation as vertex buffer : create default heap, upload heap, uploadsubresource, store the GPU virtual address in index buffer view. then in updatePipeline function, add new function (set index buffer) in commandList, and change draw call function to DrawIndexedInstanced() 
+create descriptor heap on CPU, and default heap on GPU. use view description and clear value to create depth/stencil view.
+
+set the buffer during set render target command and clear the buffer during clear render target view.
 
 
 url: 
 
-https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-index-buffers
+https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-depth-testing

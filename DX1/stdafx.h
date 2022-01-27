@@ -44,6 +44,9 @@ ID3D12Resource* vertexBuffer; // default buffer
 ID3D12Resource* indexBuffer;
 D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 D3D12_INDEX_BUFFER_VIEW indexBufferView;
+// depth test
+ID3D12Resource* depthStencilBuffer;
+ID3D12DescriptorHeap* dsDescriptorHeap;
 
 // create a window
 bool InitializeWindow(HINSTANCE hInstance, int ShowWnd, int width, int height, bool fullscreen);

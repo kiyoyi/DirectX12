@@ -349,6 +349,7 @@ bool InitD3D()
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT); // a default rasterizer state.
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT); // a default blend state.
 	psoDesc.NumRenderTargets = 1; // we are only binding one render target
+	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	// create the pso
 	hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineStateObject));
 	if (FAILED(hr))
@@ -358,10 +359,16 @@ bool InitD3D()
 
 	/*********************** create vertex buffer ***********************/
 	Vertex vList[] = {
-		{ -0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
-		{ 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 1.0f },
+		// first quad
+		{	-0.5f,	0.5f,	0.5f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{	0.5f,	-0.5f,	0.5f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{	-0.5f,	-0.5f,	0.5f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{	0.5f,	0.5f,	0.5f,	0.0f,	0.0f,	1.0f,	1.0f },
+		// second quad
+		{ -0.75f,	0.75f,	0.3f,	0.0f,	1.0f,	0.0f,	1.0f },
+		{	0.0f,	0.0f,	0.3f,	0.0f,	1.0f,	0.0f,	1.0f },
+		{ -0.75f,	0.0f,	0.3f,	0.0f,	1.0f,	0.0f,	1.0f },
+		{	0.0f,	0.75f,	0.3f,	0.0f,	1.0f,	0.0f,	1.0f },
 	};
 	int vBufferSize = sizeof(vList);
 
@@ -438,6 +445,37 @@ bool InitD3D()
 	tempBarrier = CD3DX12_RESOURCE_BARRIER::Transition(indexBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 	commandList->ResourceBarrier(1, &tempBarrier);
 
+	/*********************** create depth/stencil descriptor heap ***********************/
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+	dsvHeapDesc.NumDescriptors = 1;
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	hr = device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsDescriptorHeap));
+	if (FAILED(hr))
+	{
+		Running = false;
+	}
+	dsDescriptorHeap->SetName(L"Depth/Stencil Resource Heap");
+	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDes = {};
+	depthStencilDes.Format = DXGI_FORMAT_D32_FLOAT;
+	depthStencilDes.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	depthStencilDes.Flags = D3D12_DSV_FLAG_NONE;
+	D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
+	depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+	depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
+	depthOptimizedClearValue.DepthStencil.Stencil = 0;
+	tempProper = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	tempDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, Width, Height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	device->CreateCommittedResource(
+		&tempProper,
+		D3D12_HEAP_FLAG_NONE,
+		&tempDesc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		&depthOptimizedClearValue,
+		IID_PPV_ARGS(&depthStencilBuffer)
+	);
+
+	device->CreateDepthStencilView(depthStencilBuffer, &depthStencilDes, dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
 	// Now we execute the command list to upload the initial assets (triangle data)
 	commandList->Close();
@@ -507,10 +545,12 @@ void UpdatePipeline()
 	CD3DX12_RESOURCE_BARRIER tempBarrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTargets[frameIndex], D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	commandList->ResourceBarrier(1, &tempBarrier);
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), frameIndex, rtvDescriptorSize);
-	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 	//clear the render target
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	commandList->ClearDepthStencilView(dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	// draw triangle
 	commandList->SetGraphicsRootSignature(rootSignature); // set the root signature
 	commandList->RSSetViewports(1, &viewport); // set the viewports
@@ -520,6 +560,7 @@ void UpdatePipeline()
 	//commandList->DrawInstanced(3, 1, 0, 0); // finally draw 3 vertices (draw the triangle)
 	commandList->IASetIndexBuffer(&indexBufferView);
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	commandList->DrawIndexedInstanced(6, 1, 0, 4, 0);
 	tempBarrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTargets[frameIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	commandList->ResourceBarrier(1, &tempBarrier);
 	//printf("updatepipeline commandlist resource barrier\n");
@@ -591,6 +632,8 @@ void Cleanup()
 	SAFE_RELEASE(rootSignature);
 	SAFE_RELEASE(vertexBuffer);
 	SAFE_RELEASE(indexBuffer);
+	SAFE_RELEASE(depthStencilBuffer);
+	SAFE_RELEASE(dsDescriptorHeap);
 }
 
 void WaitForPreviousFrame()
