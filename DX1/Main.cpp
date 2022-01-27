@@ -3,13 +3,10 @@
 using namespace DirectX;
 
 struct Vertex {
+	Vertex(float x, float y, float z, float r, float g, float b, float a) : pos(x, y, z), color(r, g, b, a) {}
 	XMFLOAT3 pos;
+	XMFLOAT4 color;
 };
-//
-//D3D12_INPUT_ELEMENT_DESC layout[] =
-//{
-//	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-//};
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
@@ -308,9 +305,20 @@ bool InitD3D()
 	pixelShaderBytecode.pShaderBytecode = pixelShader->GetBufferPointer();
 
 	/*********************** create input layout ***********************/
+	//typedef struct D3D12_INPUT_ELEMENT_DESC {
+	//	LPCSTR                     SemanticName;
+	//	UINT                       SemanticIndex;
+	//	DXGI_FORMAT                Format;
+	//	UINT                       InputSlot; // NO. of vertex buffer
+	//	UINT                       AlignedByteOffset; // byte(8-bit)
+	//	D3D12_INPUT_CLASSIFICATION InputSlotClass;
+	//	UINT                       InstanceDataStepRate;
+	//} D3D12_INPUT_ELEMENT_DESC;
+	
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] =
 	{
-		{"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
 	};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc = {};
 	inputLayoutDesc.NumElements = sizeof(inputLayout) / sizeof(D3D12_INPUT_ELEMENT_DESC);
@@ -350,9 +358,9 @@ bool InitD3D()
 
 	/*********************** create vertex buffer ***********************/
 	Vertex vList[] = {
-		{ { 0.0f, 0.5f, 0.5f } },
-		{ { 0.5f, -0.5f, 0.5f } },
-		{ { -0.5f, -0.5f, 0.5f } },
+		{ 0.0f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
+		{ 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
+		{ -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
 	};
 	int vBufferSize = sizeof(vList);
 
@@ -443,7 +451,7 @@ void UpdatePipeline()
 	{
 		Running = false;
 	}
-	hr = commandList->Reset(commandAllocator[frameIndex], pipelineStateObject); // here PSO is null
+	hr = commandList->Reset(commandAllocator[frameIndex], pipelineStateObject);
 	if (FAILED(hr))
 	{
 		Running = false;
