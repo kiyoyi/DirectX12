@@ -3,6 +3,7 @@
 using namespace DirectX;
 
 struct Vertex {
+	Vertex(){}
 	Vertex(float x, float y, float z, float r, float g, float b, float a) : pos(x, y, z), color(r, g, b, a) {}
 	XMFLOAT3 pos;
 	XMFLOAT4 color;
@@ -358,29 +359,8 @@ bool InitD3D()
 	}
 
 	/*********************** create vertex buffer ***********************/
-	const int nCircle = 20;
+	const int nCircle = 100;
 	Vertex vList[nCircle + 1] = {
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
 	};
 	vList[0] = { 0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f };
 	vList[1] = { 0.5f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f };
@@ -389,9 +369,9 @@ bool InitD3D()
 	float pi = acos(-1.0);
 	for (int i = 1; i < nCircle; i++)
 	{
-		vList[i+1].pos.x = r * cos((360.0 / nCircle) * i * pi / 180.0);
-		vList[i+1].pos.y = r * sin((360.0 / nCircle) * i * pi / 180.0);
-		vList[i+1].pos.z = 0.0f;
+		vList[i + 1].pos.x = r * cos((360.0 / nCircle) * i * pi / 180.0);
+		vList[i + 1].pos.y = r * sin((360.0 / nCircle) * i * pi / 180.0);
+		vList[i + 1].pos.z = 0.0f;
 		vList[i + 1].color = { 0.0f,	0.0f,	1.0f,	1.0f };
 	}
 
