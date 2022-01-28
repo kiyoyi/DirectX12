@@ -358,19 +358,42 @@ bool InitD3D()
 	}
 
 	/*********************** create vertex buffer ***********************/
-	Vertex vList[] = {
-		// first quad
-		{	-0.5f,	0.5f,	0.5f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{	0.5f,	-0.5f,	0.5f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{	-0.5f,	-0.5f,	0.5f,	0.0f,	0.0f,	1.0f,	1.0f },
-		{	0.5f,	0.5f,	0.5f,	0.0f,	0.0f,	1.0f,	1.0f },
-		// second quad
-		{ -0.75f,	0.75f,	0.3f,	0.0f,	1.0f,	0.0f,	1.0f },
-		{	0.0f,	0.0f,	0.3f,	0.0f,	1.0f,	0.0f,	1.0f },
-		{ -0.75f,	0.0f,	0.3f,	0.0f,	1.0f,	0.0f,	1.0f },
-		{	0.0f,	0.75f,	0.3f,	0.0f,	1.0f,	0.0f,	1.0f },
+	const int nCircle = 20;
+	Vertex vList[nCircle + 1] = {
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
+		{ 	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f },
 	};
+	vList[0] = { 0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f };
+	vList[1] = { 0.5f,	0.0f,	0.0f,	0.0f,	0.0f,	1.0f,	1.0f };
 	int vBufferSize = sizeof(vList);
+	float r = 0.5f;
+	float pi = acos(-1.0);
+	for (int i = 1; i < nCircle; i++)
+	{
+		vList[i+1].pos.x = r * cos((360.0 / nCircle) * i * pi / 180.0);
+		vList[i+1].pos.y = r * sin((360.0 / nCircle) * i * pi / 180.0);
+		vList[i+1].pos.z = 0.0f;
+		vList[i + 1].color = { 0.0f,	0.0f,	1.0f,	1.0f };
+	}
 
 	// create default heap
 	D3D12_HEAP_PROPERTIES tempProper = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -408,10 +431,14 @@ bool InitD3D()
 	commandList->ResourceBarrier(1, &tempBarrier);
 
 	/*********************** create index buffer ***********************/
-	DWORD iList[] = {
-		0, 1, 2,
-		0, 3, 1
+	DWORD iList[nCircle * 3] = {
 	};
+	for (int i = 0; i < nCircle; i++)
+	{
+		iList[i * 3] = 0;
+		iList[i * 3 + 1] = (i + 1) % nCircle + 1;
+		iList[i * 3 + 2] = i % nCircle + 1;
+	}
 	int iBufferSize = sizeof(iList);
 	// create default heap
 	tempProper = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -559,8 +586,8 @@ void UpdatePipeline()
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // set the vertex buffer (using the vertex buffer view)
 	//commandList->DrawInstanced(3, 1, 0, 0); // finally draw 3 vertices (draw the triangle)
 	commandList->IASetIndexBuffer(&indexBufferView);
-	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-	commandList->DrawIndexedInstanced(6, 1, 0, 4, 0);
+	commandList->DrawIndexedInstanced(indexBufferView.SizeInBytes / sizeof(int), 1, 0, 0, 0);
+	//commandList->DrawIndexedInstanced(6, 1, 0, 4, 0);
 	tempBarrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTargets[frameIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	commandList->ResourceBarrier(1, &tempBarrier);
 	//printf("updatepipeline commandlist resource barrier\n");

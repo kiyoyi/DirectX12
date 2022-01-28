@@ -15,7 +15,7 @@ HWND hwnd = NULL;
 LPCTSTR WindowName = L"FirstApp";
 LPCTSTR WindowTitle = L"Ljq Window";
 int Width = 800;
-int Height = 600;
+int Height = 800;
 bool FullScreen = false;
 // we will exit the program when this becomes false
 bool Running = true;
