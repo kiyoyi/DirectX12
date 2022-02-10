@@ -1,10 +1,14 @@
-# 6 Depth Testing
+# 6 Constant Buffer
 
-create descriptor heap on CPU, and default heap on GPU. use view description and clear value to create depth/stencil view.
+To store data that varies often. 
 
-set the buffer during set render target command and clear the buffer during clear render target view.
-
+root signature
+root parameter 
+descriptor table (num of descriptor range / pointer to descriptor range)
+descriptor range
+constant buffer descriptor (store in constant buffer descriptor heap in GPU) (mainDescriptorHeap[])
+constant buffer (store in constant buffer resource heap in GPU) (constantBufferUploadHeap)
 
 url: 
 
-https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-depth-testing
+https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables

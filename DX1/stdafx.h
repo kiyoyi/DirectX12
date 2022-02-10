@@ -47,6 +47,10 @@ D3D12_INDEX_BUFFER_VIEW indexBufferView;
 // depth test
 ID3D12Resource* depthStencilBuffer;
 ID3D12DescriptorHeap* dsDescriptorHeap;
+// constant buffer
+ID3D12DescriptorHeap* mainDescriptorHeap[frameBufferCount];
+ID3D12Resource* constantBufferUploadHeap[frameBufferCount]; // memory on the gpu
+
 
 // create a window
 bool InitializeWindow(HINSTANCE hInstance, int ShowWnd, int width, int height, bool fullscreen);
