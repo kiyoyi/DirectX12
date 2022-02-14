@@ -7,6 +7,8 @@
 #include <initguid.h>
 #include "d3dx12.h"
 
+using namespace DirectX;
+
 // this will only call release if an object exists (prevents exceptions calling release on non existant objects)
 #define SAFE_RELEASE(p) { if ( (p) ) { (p)->Release(); (p) = 0; } }
 
@@ -47,10 +49,29 @@ D3D12_INDEX_BUFFER_VIEW indexBufferView;
 // depth test
 ID3D12Resource* depthStencilBuffer;
 ID3D12DescriptorHeap* dsDescriptorHeap;
-// constant buffer
-ID3D12DescriptorHeap* mainDescriptorHeap[frameBufferCount];
-ID3D12Resource* constantBufferUploadHeap[frameBufferCount]; // memory on the gpu
+// transformations and world view projection
+struct ConstantBufferPerObject {
+	XMFLOAT4X4 wvpMat;
+};
+int ConstantBufferPerObjectAlignedSize = (sizeof(ConstantBufferPerObject) + 255) & ~255;
+ConstantBufferPerObject cbPerObject;
+ID3D12Resource* constantBufferUploadHeaps[frameBufferCount];
+UINT8* cbvGPUAddress[frameBufferCount]; // pointer to each constant buffer resource heap
+XMFLOAT4X4 cameraProjMat; // projection matrix
+XMFLOAT4X4 cameraViewMat; // view matrix
+XMFLOAT4 cameraPosition; // camera position vector
+XMFLOAT4 cameraTarget; 
+XMFLOAT4 cameraUp; // word up vector
 
+XMFLOAT4X4 cube1WorldMat;
+XMFLOAT4X4 cube1RotMat; // rotation
+XMFLOAT4 cube1Position; 
+
+XMFLOAT4X4 cube2WorldMat;
+XMFLOAT4X4 cube2RotMat;
+XMFLOAT4 cube2PositionOffset; // from the first cube
+
+int numCubeIndices; // number of indices to draw the cube
 
 // create a window
 bool InitializeWindow(HINSTANCE hInstance, int ShowWnd, int width, int height, bool fullscreen);
